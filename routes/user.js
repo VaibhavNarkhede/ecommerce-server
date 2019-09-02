@@ -35,22 +35,26 @@ router.post('/signin', (request, response) => {
     db.connection.query(statement,
             [email, encryptedPassword],
             (error, users) => {
-                if (users.length == 0)
-                {
-                    response.send(utils.createResponse('user does not exist'))
+                if(error) {
+                    console.log(error)
                 } else {
-                    const user = users[0]
-                    //Creates the token
-                    const token = jwt.sign({id: user['id']}, config.secret)
+                    if (users.length == 0)
+                    {
+                        response.send(utils.createResponse('user does not exist'))
+                    } else {
+                        const user = users[0]
+                        //Creates the token
+                        const token = jwt.sign({id: user['id']}, config.secret)
 
-                    const data = {
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        token: token
-                    }
+                        const data = {
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            token: token
+                        }
 
-                    response.send(utils.createResponse(error, data))     
-                }                
+                        response.send(utils.createResponse(error, data))     
+                    }        
+                }                        
             }
         )
 })
